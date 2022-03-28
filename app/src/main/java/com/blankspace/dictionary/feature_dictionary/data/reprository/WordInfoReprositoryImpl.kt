@@ -25,9 +25,18 @@ class WordInfoReprositoryImpl(
             dao.deleteWordInfos(remoteWordInfos.map { it.word })
             dao.insertWordInfos(remoteWordInfos.map{it.toWordInfoEntity()})
         }catch (e: HttpException){
-
+            emit(Resource.Error(
+                message = "Oops, Something went wrong !",
+                data = wordInfos
+            ))
         }catch (e: IOException){
-
+            emit(Resource.Error(
+                message = "Couldn't reach server, Check your internet connection",
+                data = wordInfos
+            ))
         }
+
+        val newWordInfo = dao.getWordInfos(word).map{it.toWordInfo()}
+        emit(Resource.Success(newWordInfo))
     }
 }
